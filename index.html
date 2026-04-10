@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Parking Control</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Courier New',monospace;background:#0a0a0a;color:#e0e0e0;min-height:100vh}
+.lock-screen{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:2rem}
+.main-screen{display:none;max-width:680px;margin:0 auto;padding:2rem 1.5rem}
+.logo{font-size:11px;letter-spacing:0.3em;color:#555;text-transform:uppercase;margin-bottom:3rem}
+.lock-title{font-size:28px;font-weight:normal;letter-spacing:-0.02em;color:#e0e0e0;margin-bottom:0.5rem}
+.lock-sub{font-size:13px;color:#555;margin-bottom:2.5rem;letter-spacing:0.05em}
+.pw-wrap{display:flex;gap:0;border:1px solid #2a2a2a;border-radius:6px;overflow:hidden;width:100%;max-width:340px}
+.pw-wrap input{flex:1;background:#111;border:none;color:#e0e0e0;font-family:'Courier New',monospace;font-size:14px;padding:12px 16px;outline:none}
+.pw-wrap button{background:#e0e0e0;border:none;color:#0a0a0a;font-family:'Courier New',monospace;font-size:12px;letter-spacing:0.1em;padding:12px 20px;cursor:pointer}
+.pw-error{font-size:12px;color:#c0392b;margin-top:12px;letter-spacing:0.05em;display:none}
+.header{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:3rem;border-bottom:1px solid #1a1a1a;padding-bottom:1.5rem}
+.header-title{font-size:20px;letter-spacing:-0.01em}
+.header-sub{font-size:11px;color:#444;letter-spacing:0.2em;text-transform:uppercase}
+.section{margin-bottom:2.5rem}
+.section-label{font-size:10px;letter-spacing:0.3em;text-transform:uppercase;color:#444;margin-bottom:1rem;padding-bottom:0.5rem;border-bottom:1px solid #1a1a1a}
+.field-row{display:flex;gap:12px;margin-bottom:12px;align-items:center}
+.field-label{font-size:12px;color:#666;width:120px;flex-shrink:0;letter-spacing:0.05em}
+.field-input{flex:1;background:#111;border:1px solid #222;color:#e0e0e0;font-family:'Courier New',monospace;font-size:13px;padding:9px 12px;border-radius:4px;outline:none}
+.field-input:focus{border-color:#444}
+.plate-wrap{display:flex;gap:8px;flex:1}
+.plate-city{width:80px;text-transform:uppercase}
+.plate-num{flex:1;text-transform:uppercase}
+.days-grid{display:flex;gap:8px;flex-wrap:wrap;flex:1}
+.day-chip{background:#111;border:1px solid #222;color:#555;font-family:'Courier New',monospace;font-size:11px;padding:6px 12px;border-radius:3px;cursor:pointer;letter-spacing:0.1em;user-select:none}
+.day-chip.active{background:#e0e0e0;color:#0a0a0a;border-color:#e0e0e0}
+.time-row{display:flex;gap:12px;align-items:center;margin-bottom:10px}
+.time-day-label{font-size:11px;color:#555;width:60px;letter-spacing:0.1em}
+.time-input{background:#111;border:1px solid #222;color:#e0e0e0;font-family:'Courier New',monospace;font-size:13px;padding:8px 10px;border-radius:4px;outline:none;width:90px}
+.time-sep{color:#333;font-size:12px}
+.token-wrap{position:relative;flex:1}
+.token-toggle{position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;color:#444;cursor:pointer;font-size:11px;font-family:'Courier New',monospace;letter-spacing:0.05em}
+.save-btn{width:100%;background:#e0e0e0;color:#0a0a0a;border:none;font-family:'Courier New',monospace;font-size:12px;letter-spacing:0.2em;text-transform:uppercase;padding:14px;border-radius:4px;cursor:pointer;margin-top:1rem}
+.save-btn:hover{background:#fff}
+.status-msg{font-size:12px;text-align:center;margin-top:12px;letter-spacing:0.05em;min-height:18px}
+.status-ok{color:#27ae60}
+.status-err{color:#c0392b}
+.logout-btn{background:none;border:none;color:#333;font-family:'Courier New',monospace;font-size:11px;cursor:pointer;letter-spacing:0.1em}
+.logout-btn:hover{color:#666}
+</style>
+</head>
+<body>
+
+<div class="lock-screen" id="lockScreen">
+  <div class="logo">Parking Control System</div>
+  <div class="lock-title">Zugang erforderlich</div>
+  <div class="lock-sub">Passwort eingeben um fortzufahren</div>
+  <div class="pw-wrap">
+    <input type="password" id="pwInput" placeholder="••••••••" onkeydown="if(event.key==='Enter')checkPw()" />
+    <button onclick="checkPw()">ENTER</button>
+  </div>
+  <div class="pw-error" id="pwError">Falsches Passwort</div>
+</div>
+
+<div class="main-screen" id="mainScreen">
+  <div class="header">
+    <div>
+      <div class="header-title">Parking Config</div>
+      <div class="header-sub">weichkaese / parking-auto-extend</div>
+    </div>
+    <button class="logout-btn" onclick="logout()">ABMELDEN</button>
+  </div>
+
+  <div class="section">
+    <div class="section-label">Kennzeichen</div>
+    <div class="field-row">
+      <div class="field-label">Kennzeichen</div>
+      <div class="plate-wrap">
+        <input class="field-input plate-city" id="plateCity" placeholder="UL" maxlength="3" />
+        <input class="field-input plate-num" id="plateNum" placeholder="KL787" maxlength="8" />
+      </div>
+    </div>
+    <div class="field-row">
+      <div class="field-label">E-Mail</div>
+      <input class="field-input" id="emailInput" placeholder="deine@email.de" type="email" />
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">Aktive Tage</div>
+    <div class="field-row">
+      <div class="field-label">Wochentage</div>
+      <div class="days-grid" id="daysGrid">
+        <div class="day-chip active" data-day="monday">MO</div>
+        <div class="day-chip active" data-day="tuesday">DI</div>
+        <div class="day-chip active" data-day="wednesday">MI</div>
+        <div class="day-chip active" data-day="thursday">DO</div>
+        <div class="day-chip active" data-day="friday">FR</div>
+        <div class="day-chip" data-day="saturday">SA</div>
+        <div class="day-chip" data-day="sunday">SO</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">Zeitfenster</div>
+    <div class="time-row">
+      <div class="time-day-label">Mo – Fr</div>
+      <input class="time-input" id="wdStart" type="time" value="06:00" />
+      <div class="time-sep">bis</div>
+      <input class="time-input" id="wdEnd" type="time" value="06:30" />
+    </div>
+    <div class="time-row">
+      <div class="time-day-label">Samstag</div>
+      <input class="time-input" id="saStart" type="time" value="09:00" />
+      <div class="time-sep">bis</div>
+      <input class="time-input" id="saEnd" type="time" value="09:30" />
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">GitHub Zugang</div>
+    <div class="field-row">
+      <div class="field-label">Access Token</div>
+      <div class="token-wrap">
+        <input class="field-input" id="ghToken" type="password" placeholder="ghp_xxxxxxxxxxxx" style="padding-right:70px" />
+        <button class="token-toggle" onclick="toggleToken()">ZEIGEN</button>
+      </div>
+    </div>
+  </div>
+
+  <button class="save-btn" onclick="saveConfig()">EINSTELLUNGEN SPEICHERN</button>
+  <div class="status-msg" id="statusMsg"></div>
+</div>
+
+<script>
+const PASS='parking2024';
+const REPO='weichkaese/parking-auto-extend';
+const FILE='config.json';
+
+function checkPw(){
+  if(document.getElementById('pwInput').value===PASS){
+    document.getElementById('lockScreen').style.display='none';
+    document.getElementById('mainScreen').style.display='block';
+    loadConfig();
+  } else {
+    document.getElementById('pwError').style.display='block';
+  }
+}
+
+function logout(){
+  document.getElementById('lockScreen').style.display='flex';
+  document.getElementById('mainScreen').style.display='none';
+  document.getElementById('pwInput').value='';
+}
+
+function toggleToken(){
+  const inp=document.getElementById('ghToken');
+  const btn=document.querySelector('.token-toggle');
+  if(inp.type==='password'){inp.type='text';btn.textContent='HIDDEN';}
+  else{inp.type='password';btn.textContent='ZEIGEN';}
+}
+
+document.querySelectorAll('.day-chip').forEach(chip=>{
+  chip.addEventListener('click',()=>chip.classList.toggle('active'));
+});
+
+async function loadConfig(){
+  const token=document.getElementById('ghToken').value;
+  if(!token) return;
+  try{
+    const r=await fetch(`https://api.github.com/repos/${REPO}/contents/${FILE}`,{
+      headers:{Authorization:`token ${token}`,Accept:'application/vnd.github.v3+json'}
+    });
+    if(!r.ok) return;
+    const data=await r.json();
+    const cfg=JSON.parse(atob(data.content));
+    document.getElementById('plateCity').value=cfg.plate_city||'';
+    document.getElementById('plateNum').value=cfg.plate_number||'';
+    document.getElementById('emailInput').value=cfg.email||'';
+    if(cfg.weekday_start) document.getElementById('wdStart').value=cfg.weekday_start;
+    if(cfg.weekday_end) document.getElementById('wdEnd').value=cfg.weekday_end;
+    if(cfg.saturday_start) document.getElementById('saStart').value=cfg.saturday_start;
+    if(cfg.saturday_end) document.getElementById('saEnd').value=cfg.saturday_end;
+    if(cfg.schedule_days){
+      document.querySelectorAll('.day-chip').forEach(chip=>{
+        chip.classList.toggle('active',cfg.schedule_days.includes(chip.dataset.day));
+      });
+    }
+  } catch(e){}
+}
+
+async function saveConfig(){
+  const token=document.getElementById('ghToken').value;
+  if(!token){showStatus('GitHub Token fehlt',false);return;}
+  const activeDays=[...document.querySelectorAll('.day-chip.active')].map(c=>c.dataset.day);
+  const cfg={
+    plate_city:document.getElementById('plateCity').value.toUpperCase(),
+    plate_number:document.getElementById('plateNum').value.toUpperCase(),
+    email:document.getElementById('emailInput').value,
+    schedule_days:activeDays,
+    weekday_start:document.getElementById('wdStart').value,
+    weekday_end:document.getElementById('wdEnd').value,
+    saturday_start:document.getElementById('saStart').value,
+    saturday_end:document.getElementById('saEnd').value
+  };
+  try{
+    const getR=await fetch(`https://api.github.com/repos/${REPO}/contents/${FILE}`,{
+      headers:{Authorization:`token ${token}`,Accept:'application/vnd.github.v3+json'}
+    });
+    const getData=await getR.json();
+    const putR=await fetch(`https://api.github.com/repos/${REPO}/contents/${FILE}`,{
+      method:'PUT',
+      headers:{Authorization:`token ${token}`,Accept:'application/vnd.github.v3+json','Content-Type':'application/json'},
+      body:JSON.stringify({message:'Config update via dashboard',content:btoa(JSON.stringify(cfg,null,2)),sha:getData.sha})
+    });
+    if(putR.ok) showStatus('Gespeichert ✓',true);
+    else showStatus('Fehler beim Speichern',false);
+  } catch(e){showStatus('Verbindungsfehler',false);}
+}
+
+function showStatus(msg,ok){
+  const el=document.getElementById('statusMsg');
+  el.textContent=msg;
+  el.className='status-msg '+(ok?'status-ok':'status-err');
+  setTimeout(()=>el.textContent='',4000);
+}
+</script>
+</body>
+</html>
