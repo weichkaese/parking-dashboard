@@ -6,139 +6,177 @@
 <title>Parking Control</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'Courier New',monospace;background:#0a0a0a;color:#e0e0e0;min-height:100vh}
-.lock-screen{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:2rem}
-.main-screen{display:none;max-width:680px;margin:0 auto;padding:2rem 1.5rem}
-.logo{font-size:11px;letter-spacing:0.3em;color:#555;text-transform:uppercase;margin-bottom:3rem}
-.lock-title{font-size:28px;font-weight:normal;letter-spacing:-0.02em;color:#e0e0e0;margin-bottom:0.5rem}
-.lock-sub{font-size:13px;color:#555;margin-bottom:2.5rem;letter-spacing:0.05em}
-.pw-wrap{display:flex;gap:0;border:1px solid #2a2a2a;border-radius:6px;overflow:hidden;width:100%;max-width:340px}
-.pw-wrap input{flex:1;background:#111;border:none;color:#e0e0e0;font-family:'Courier New',monospace;font-size:14px;padding:12px 16px;outline:none}
-.pw-wrap button{background:#e0e0e0;border:none;color:#0a0a0a;font-family:'Courier New',monospace;font-size:12px;letter-spacing:0.1em;padding:12px 20px;cursor:pointer}
-.pw-error{font-size:12px;color:#c0392b;margin-top:12px;letter-spacing:0.05em;display:none}
-.header{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:3rem;border-bottom:1px solid #1a1a1a;padding-bottom:1.5rem}
-.header-title{font-size:20px;letter-spacing:-0.01em}
-.header-sub{font-size:11px;color:#444;letter-spacing:0.2em;text-transform:uppercase}
-.section{margin-bottom:2.5rem}
-.section-label{font-size:10px;letter-spacing:0.3em;text-transform:uppercase;color:#444;margin-bottom:1rem;padding-bottom:0.5rem;border-bottom:1px solid #1a1a1a}
-.field-row{display:flex;gap:12px;margin-bottom:12px;align-items:center}
-.field-label{font-size:12px;color:#666;width:120px;flex-shrink:0;letter-spacing:0.05em}
-.field-input{flex:1;background:#111;border:1px solid #222;color:#e0e0e0;font-family:'Courier New',monospace;font-size:13px;padding:9px 12px;border-radius:4px;outline:none}
-.field-input:focus{border-color:#444}
-.plate-wrap{display:flex;gap:8px;flex:1}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:#f0f4f8;color:#1a1a2e;min-height:100vh}
+
+.lock-screen{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;background:linear-gradient(135deg,#e8f4fd 0%,#dbeafe 100%)}
+.lock-card{background:#fff;border-radius:16px;padding:2.5rem 2rem;width:100%;max-width:360px;box-shadow:0 4px 24px rgba(59,130,246,0.10)}
+.lock-logo{font-size:13px;letter-spacing:0.2em;color:#93c5fd;text-transform:uppercase;margin-bottom:1.5rem;font-weight:600}
+.lock-title{font-size:24px;font-weight:700;color:#1e3a5f;margin-bottom:0.4rem}
+.lock-sub{font-size:13px;color:#64748b;margin-bottom:2rem}
+.pw-field{width:100%;background:#f8fafc;border:1.5px solid #e2e8f0;color:#1a1a2e;font-size:14px;padding:11px 14px;border-radius:8px;outline:none;margin-bottom:12px}
+.pw-field:focus{border-color:#3b82f6}
+.pw-btn{width:100%;background:#3b82f6;color:#fff;border:none;font-size:14px;font-weight:600;padding:12px;border-radius:8px;cursor:pointer;letter-spacing:0.03em}
+.pw-btn:hover{background:#2563eb}
+.pw-error{font-size:12px;color:#ef4444;margin-top:8px;display:none}
+
+.app{display:none;min-height:100vh;flex-direction:column}
+.topbar{background:#fff;border-bottom:1px solid #e2e8f0;padding:0 2rem;height:56px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:10}
+.topbar-left{display:flex;align-items:center;gap:12px}
+.topbar-logo{width:28px;height:28px;background:#3b82f6;border-radius:8px;display:flex;align-items:center;justify-content:center}
+.topbar-logo svg{width:16px;height:16px;fill:#fff}
+.topbar-title{font-size:15px;font-weight:700;color:#1e3a5f}
+.topbar-sub{font-size:11px;color:#94a3b8}
+.logout-btn{background:none;border:1px solid #e2e8f0;color:#64748b;font-size:12px;padding:6px 14px;border-radius:6px;cursor:pointer}
+.logout-btn:hover{border-color:#3b82f6;color:#3b82f6}
+
+.content{flex:1;padding:2rem;max-width:1100px;margin:0 auto;width:100%}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem}
+@media(max-width:700px){.grid{grid-template-columns:1fr}}
+
+.card{background:#fff;border-radius:14px;padding:1.5rem;box-shadow:0 1px 4px rgba(0,0,0,0.06)}
+.card-title{font-size:13px;font-weight:700;color:#3b82f6;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:1.2rem;display:flex;align-items:center;gap:8px}
+.card-title svg{width:14px;height:14px}
+
+.field-group{margin-bottom:1rem}
+.field-label{font-size:12px;font-weight:600;color:#475569;margin-bottom:5px;display:block}
+.field-input{width:100%;background:#f8fafc;border:1.5px solid #e2e8f0;color:#1a1a2e;font-size:13px;padding:9px 12px;border-radius:8px;outline:none}
+.field-input:focus{border-color:#3b82f6;background:#fff}
+.plate-row{display:flex;gap:8px}
 .plate-city{width:80px;text-transform:uppercase}
-.plate-num{flex:1;text-transform:uppercase}
-.days-grid{display:flex;gap:8px;flex-wrap:wrap;flex:1}
-.day-chip{background:#111;border:1px solid #222;color:#555;font-family:'Courier New',monospace;font-size:11px;padding:6px 12px;border-radius:3px;cursor:pointer;letter-spacing:0.1em;user-select:none}
-.day-chip.active{background:#e0e0e0;color:#0a0a0a;border-color:#e0e0e0}
-.time-row{display:flex;gap:12px;align-items:center;margin-bottom:10px}
-.time-day-label{font-size:11px;color:#555;width:60px;letter-spacing:0.1em}
-.time-input{background:#111;border:1px solid #222;color:#e0e0e0;font-family:'Courier New',monospace;font-size:13px;padding:8px 10px;border-radius:4px;outline:none;width:90px}
-.time-sep{color:#333;font-size:12px}
-.token-wrap{position:relative;flex:1}
-.token-toggle{position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;color:#444;cursor:pointer;font-size:11px;font-family:'Courier New',monospace;letter-spacing:0.05em}
-.save-btn{width:100%;background:#e0e0e0;color:#0a0a0a;border:none;font-family:'Courier New',monospace;font-size:12px;letter-spacing:0.2em;text-transform:uppercase;padding:14px;border-radius:4px;cursor:pointer;margin-top:1rem}
-.save-btn:hover{background:#fff}
-.status-msg{font-size:12px;text-align:center;margin-top:12px;letter-spacing:0.05em;min-height:18px}
-.status-ok{color:#27ae60}
-.status-err{color:#c0392b}
-.logout-btn{background:none;border:none;color:#333;font-family:'Courier New',monospace;font-size:11px;cursor:pointer;letter-spacing:0.1em}
-.logout-btn:hover{color:#666}
+.plate-sep{display:flex;align-items:center;color:#cbd5e1;font-weight:700;font-size:16px}
+
+.token-wrap{position:relative}
+.token-eye{position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;color:#94a3b8;cursor:pointer;font-size:11px;font-weight:600;letter-spacing:0.05em}
+
+.rules-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem}
+.add-rule-btn{background:#3b82f6;color:#fff;border:none;font-size:12px;font-weight:600;padding:7px 14px;border-radius:8px;cursor:pointer;display:flex;align-items:center;gap:5px}
+.add-rule-btn:hover{background:#2563eb}
+
+.rule-block{background:#f8fafc;border:1.5px solid #e2e8f0;border-radius:10px;padding:1rem;margin-bottom:0.75rem;position:relative}
+.rule-block-title{font-size:11px;font-weight:700;color:#3b82f6;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:0.75rem}
+.rule-remove{position:absolute;top:10px;right:10px;background:none;border:none;color:#cbd5e1;cursor:pointer;font-size:16px;line-height:1}
+.rule-remove:hover{color:#ef4444}
+
+.days-grid{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:0.75rem}
+.day-chip{background:#fff;border:1.5px solid #e2e8f0;color:#64748b;font-size:11px;font-weight:600;padding:5px 10px;border-radius:6px;cursor:pointer;user-select:none;transition:all 0.15s}
+.day-chip.active{background:#dbeafe;color:#1d4ed8;border-color:#93c5fd}
+
+.time-mode{display:flex;gap:8px;margin-bottom:0.75rem}
+.mode-btn{flex:1;background:#fff;border:1.5px solid #e2e8f0;color:#64748b;font-size:11px;font-weight:600;padding:7px;border-radius:7px;cursor:pointer;text-align:center;transition:all 0.15s}
+.mode-btn.active{background:#dbeafe;color:#1d4ed8;border-color:#93c5fd}
+
+.time-inputs{display:flex;align-items:center;gap:8px}
+.time-input{background:#fff;border:1.5px solid #e2e8f0;color:#1a1a2e;font-size:13px;padding:7px 10px;border-radius:7px;outline:none;width:100px}
+.time-input:focus{border-color:#3b82f6}
+.time-sep{font-size:12px;color:#94a3b8;font-weight:600}
+
+.no-rules{text-align:center;padding:2rem 1rem;color:#94a3b8;font-size:13px}
+
+.bottom-bar{background:#fff;border-top:1px solid #e2e8f0;padding:1rem 2rem;display:flex;align-items:center;justify-content:space-between;position:sticky;bottom:0}
+.save-btn{background:#22c55e;color:#fff;border:none;font-size:14px;font-weight:700;padding:11px 32px;border-radius:9px;cursor:pointer;letter-spacing:0.03em}
+.save-btn:hover{background:#16a34a}
+.status-msg{font-size:13px;font-weight:500;min-height:20px}
+.status-ok{color:#22c55e}
+.status-err{color:#ef4444}
 </style>
 </head>
 <body>
 
 <div class="lock-screen" id="lockScreen">
-  <div class="logo">Parking Control System</div>
-  <div class="lock-title">Zugang erforderlich</div>
-  <div class="lock-sub">Passwort eingeben um fortzufahren</div>
-  <div class="pw-wrap">
-    <input type="password" id="pwInput" placeholder="••••••••" onkeydown="if(event.key==='Enter')checkPw()" />
-    <button onclick="checkPw()">ENTER</button>
+  <div class="lock-card">
+    <div class="lock-logo">Parking Control</div>
+    <div class="lock-title">Willkommen zurück</div>
+    <div class="lock-sub">Passwort eingeben um fortzufahren</div>
+    <input type="password" class="pw-field" id="pwInput" placeholder="Passwort" onkeydown="if(event.key==='Enter')checkPw()" />
+    <button class="pw-btn" onclick="checkPw()">Anmelden</button>
+    <div class="pw-error" id="pwError">Falsches Passwort</div>
   </div>
-  <div class="pw-error" id="pwError">Falsches Passwort</div>
 </div>
 
-<div class="main-screen" id="mainScreen">
-  <div class="header">
-    <div>
-      <div class="header-title">Parking Config</div>
-      <div class="header-sub">weichkaese / parking-auto-extend</div>
-    </div>
-    <button class="logout-btn" onclick="logout()">ABMELDEN</button>
-  </div>
-
-  <div class="section">
-    <div class="section-label">Kennzeichen</div>
-    <div class="field-row">
-      <div class="field-label">Kennzeichen</div>
-      <div class="plate-wrap">
-        <input class="field-input plate-city" id="plateCity" placeholder="UL" maxlength="3" />
-        <input class="field-input plate-num" id="plateNum" placeholder="KL787" maxlength="8" />
+<div class="app" id="app">
+  <div class="topbar">
+    <div class="topbar-left">
+      <div class="topbar-logo">
+        <svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+      </div>
+      <div>
+        <div class="topbar-title">Parking Control</div>
+        <div class="topbar-sub">weichkaese / parking-auto-extend</div>
       </div>
     </div>
-    <div class="field-row">
-      <div class="field-label">E-Mail</div>
-      <input class="field-input" id="emailInput" placeholder="deine@email.de" type="email" />
-    </div>
+    <button class="logout-btn" onclick="logout()">Abmelden</button>
   </div>
 
-  <div class="section">
-    <div class="section-label">Aktive Tage</div>
-    <div class="field-row">
-      <div class="field-label">Wochentage</div>
-      <div class="days-grid" id="daysGrid">
-        <div class="day-chip active" data-day="monday">MO</div>
-        <div class="day-chip active" data-day="tuesday">DI</div>
-        <div class="day-chip active" data-day="wednesday">MI</div>
-        <div class="day-chip active" data-day="thursday">DO</div>
-        <div class="day-chip active" data-day="friday">FR</div>
-        <div class="day-chip" data-day="saturday">SA</div>
-        <div class="day-chip" data-day="sunday">SO</div>
+  <div class="content">
+    <div class="grid">
+
+      <div>
+        <div class="card">
+          <div class="card-title">Fahrzeug & Konto</div>
+
+          <div class="field-group">
+            <label class="field-label">Kennzeichen</label>
+            <div class="plate-row">
+              <input class="field-input plate-city" id="plateCity" placeholder="UL" maxlength="3" />
+              <div class="plate-sep">–</div>
+              <input class="field-input" id="plateNum" placeholder="KL787" maxlength="8" style="text-transform:uppercase;flex:1" />
+            </div>
+          </div>
+
+          <div class="field-group">
+            <label class="field-label">E-Mail Adresse</label>
+            <input class="field-input" id="emailInput" type="email" placeholder="deine@email.de" />
+          </div>
+        </div>
+
+        <div class="card" style="margin-top:1.5rem">
+          <div class="card-title">GitHub Zugang</div>
+          <div class="field-group">
+            <label class="field-label">Personal Access Token</label>
+            <div class="token-wrap">
+              <input class="field-input" id="ghToken" type="password" placeholder="ghp_xxxxxxxxxxxx" style="padding-right:60px" />
+              <button class="token-eye" onclick="toggleToken()">ZEIGEN</button>
+            </div>
+          </div>
+        </div>
       </div>
-    </div>
-  </div>
 
-  <div class="section">
-    <div class="section-label">Zeitfenster</div>
-    <div class="time-row">
-      <div class="time-day-label">Mo – Fr</div>
-      <input class="time-input" id="wdStart" type="time" value="06:00" />
-      <div class="time-sep">bis</div>
-      <input class="time-input" id="wdEnd" type="time" value="06:30" />
-    </div>
-    <div class="time-row">
-      <div class="time-day-label">Samstag</div>
-      <input class="time-input" id="saStart" type="time" value="09:00" />
-      <div class="time-sep">bis</div>
-      <input class="time-input" id="saEnd" type="time" value="09:30" />
-    </div>
-  </div>
-
-  <div class="section">
-    <div class="section-label">GitHub Zugang</div>
-    <div class="field-row">
-      <div class="field-label">Access Token</div>
-      <div class="token-wrap">
-        <input class="field-input" id="ghToken" type="password" placeholder="ghp_xxxxxxxxxxxx" style="padding-right:70px" />
-        <button class="token-toggle" onclick="toggleToken()">ZEIGEN</button>
+      <div class="card">
+        <div class="rules-header">
+          <div class="card-title" style="margin:0">Zeitregeln</div>
+          <button class="add-rule-btn" onclick="addRule()">+ Neue Regel</button>
+        </div>
+        <div id="rulesContainer">
+          <div class="no-rules" id="noRules">Keine Regeln. Klicke auf "+ Neue Regel".</div>
+        </div>
       </div>
+
     </div>
   </div>
 
-  <button class="save-btn" onclick="saveConfig()">EINSTELLUNGEN SPEICHERN</button>
-  <div class="status-msg" id="statusMsg"></div>
+  <div class="bottom-bar">
+    <div class="status-msg" id="statusMsg"></div>
+    <button class="save-btn" onclick="saveConfig()">Einstellungen speichern</button>
+  </div>
 </div>
 
 <script>
-const PASS='parking2024';
+const PW_HASH='a4eded7a00f5e0e957b6e6b30fba33fd5ac8d06f079c6c7d1df3d15b742bb8b3';
 const REPO='weichkaese/parking-auto-extend';
 const FILE='config.json';
+const DAYS=[{k:'monday',l:'MO'},{k:'tuesday',l:'DI'},{k:'wednesday',l:'MI'},{k:'thursday',l:'DO'},{k:'friday',l:'FR'},{k:'saturday',l:'SA'},{k:'sunday',l:'SO'}];
+let ruleCount=0;
 
-function checkPw(){
-  if(document.getElementById('pwInput').value===PASS){
+async function sha256(msg){
+  const buf=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(msg));
+  return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
+}
+
+async function checkPw(){
+  const h=await sha256(document.getElementById('pwInput').value);
+  if(h===PW_HASH){
     document.getElementById('lockScreen').style.display='none';
-    document.getElementById('mainScreen').style.display='block';
+    document.getElementById('app').style.display='flex';
     loadConfig();
   } else {
     document.getElementById('pwError').style.display='block';
@@ -147,20 +185,83 @@ function checkPw(){
 
 function logout(){
   document.getElementById('lockScreen').style.display='flex';
-  document.getElementById('mainScreen').style.display='none';
+  document.getElementById('app').style.display='none';
   document.getElementById('pwInput').value='';
 }
 
 function toggleToken(){
   const inp=document.getElementById('ghToken');
-  const btn=document.querySelector('.token-toggle');
+  const btn=document.querySelector('.token-eye');
   if(inp.type==='password'){inp.type='text';btn.textContent='HIDDEN';}
   else{inp.type='password';btn.textContent='ZEIGEN';}
 }
 
-document.querySelectorAll('.day-chip').forEach(chip=>{
-  chip.addEventListener('click',()=>chip.classList.toggle('active'));
-});
+function addRule(data){
+  ruleCount++;
+  const id=ruleCount;
+  const noRules=document.getElementById('noRules');
+  if(noRules) noRules.remove();
+
+  const activeDays=data?data.days:['monday','tuesday','wednesday','thursday','friday'];
+  const mode=data?data.mode:'fixed';
+  const timeFrom=data?data.time_from:'06:00';
+  const timeTo=data?data.time_to:'06:30';
+
+  const div=document.createElement('div');
+  div.className='rule-block';
+  div.id='rule-'+id;
+  div.innerHTML=`
+    <div class="rule-block-title">Regel ${id}</div>
+    <button class="rule-remove" onclick="removeRule(${id})">×</button>
+    <div class="days-grid">
+      ${DAYS.map(d=>`<div class="day-chip${activeDays.includes(d.k)?' active':''}" data-day="${d.k}" onclick="this.classList.toggle('active')">${d.l}</div>`).join('')}
+    </div>
+    <div class="time-mode">
+      <div class="mode-btn${mode==='fixed'?' active':''}" onclick="setMode(${id},'fixed',this)">Feste Uhrzeit</div>
+      <div class="mode-btn${mode==='random'?' active':''}" onclick="setMode(${id},'random',this)">Zufällig zwischen</div>
+    </div>
+    <div class="time-inputs" id="time-inputs-${id}">
+      <input class="time-input" id="time-from-${id}" type="time" value="${timeFrom}" />
+      <div class="time-sep" id="time-sep-${id}" style="${mode==='fixed'?'display:none':''}">bis</div>
+      <input class="time-input" id="time-to-${id}" type="time" value="${timeTo}" style="${mode==='fixed'?'display:none':''}"/>
+    </div>
+  `;
+  document.getElementById('rulesContainer').appendChild(div);
+}
+
+function setMode(id,mode,el){
+  el.closest('.time-mode').querySelectorAll('.mode-btn').forEach(b=>b.classList.remove('active'));
+  el.classList.add('active');
+  const sep=document.getElementById('time-sep-'+id);
+  const timeTo=document.getElementById('time-to-'+id);
+  if(mode==='fixed'){sep.style.display='none';timeTo.style.display='none';}
+  else{sep.style.display='';timeTo.style.display='';}
+}
+
+function removeRule(id){
+  document.getElementById('rule-'+id).remove();
+  if(document.querySelectorAll('.rule-block').length===0){
+    const div=document.createElement('div');
+    div.className='no-rules';
+    div.id='noRules';
+    div.textContent='Keine Regeln. Klicke auf "+ Neue Regel".';
+    document.getElementById('rulesContainer').appendChild(div);
+  }
+}
+
+function getRules(){
+  return [...document.querySelectorAll('.rule-block')].map(block=>{
+    const id=block.id.split('-')[1];
+    const days=[...block.querySelectorAll('.day-chip.active')].map(c=>c.dataset.day);
+    const mode=block.querySelector('.mode-btn.active').textContent==='Feste Uhrzeit'?'fixed':'random';
+    return{
+      days,
+      mode,
+      time_from:document.getElementById('time-from-'+id).value,
+      time_to:document.getElementById('time-to-'+id).value
+    };
+  });
+}
 
 async function loadConfig(){
   const token=document.getElementById('ghToken').value;
@@ -175,14 +276,13 @@ async function loadConfig(){
     document.getElementById('plateCity').value=cfg.plate_city||'';
     document.getElementById('plateNum').value=cfg.plate_number||'';
     document.getElementById('emailInput').value=cfg.email||'';
-    if(cfg.weekday_start) document.getElementById('wdStart').value=cfg.weekday_start;
-    if(cfg.weekday_end) document.getElementById('wdEnd').value=cfg.weekday_end;
-    if(cfg.saturday_start) document.getElementById('saStart').value=cfg.saturday_start;
-    if(cfg.saturday_end) document.getElementById('saEnd').value=cfg.saturday_end;
-    if(cfg.schedule_days){
-      document.querySelectorAll('.day-chip').forEach(chip=>{
-        chip.classList.toggle('active',cfg.schedule_days.includes(chip.dataset.day));
-      });
+    document.getElementById('rulesContainer').innerHTML='';
+    ruleCount=0;
+    if(cfg.rules&&cfg.rules.length>0){
+      cfg.rules.forEach(r=>addRule(r));
+    } else {
+      addRule({days:['monday','tuesday','wednesday','thursday','friday'],mode:'random',time_from:'06:00',time_to:'06:30'});
+      addRule({days:['saturday'],mode:'random',time_from:'09:00',time_to:'09:30'});
     }
   } catch(e){}
 }
@@ -190,16 +290,11 @@ async function loadConfig(){
 async function saveConfig(){
   const token=document.getElementById('ghToken').value;
   if(!token){showStatus('GitHub Token fehlt',false);return;}
-  const activeDays=[...document.querySelectorAll('.day-chip.active')].map(c=>c.dataset.day);
   const cfg={
     plate_city:document.getElementById('plateCity').value.toUpperCase(),
     plate_number:document.getElementById('plateNum').value.toUpperCase(),
     email:document.getElementById('emailInput').value,
-    schedule_days:activeDays,
-    weekday_start:document.getElementById('wdStart').value,
-    weekday_end:document.getElementById('wdEnd').value,
-    saturday_start:document.getElementById('saStart').value,
-    saturday_end:document.getElementById('saEnd').value
+    rules:getRules()
   };
   try{
     const getR=await fetch(`https://api.github.com/repos/${REPO}/contents/${FILE}`,{
