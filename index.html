@@ -43,8 +43,14 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#f0f4f8;color:#1a1a2
 .plate-row{display:flex;gap:8px}
 .plate-city{width:80px;text-transform:uppercase}
 .plate-sep{display:flex;align-items:center;color:#cbd5e1;font-weight:700;font-size:16px}
-.token-wrap{position:relative}
+.token-wrap{position:relative;flex:1;min-width:200px}
 .token-eye{position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;color:#94a3b8;cursor:pointer;font-size:11px;font-weight:600;letter-spacing:0.05em}
+
+.token-bar{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:1.5rem}
+.token-bar-label{font-size:13px;font-weight:700;color:#3b82f6;white-space:nowrap}
+.token-confirm-btn{background:#3b82f6;color:#fff;border:none;font-size:13px;font-weight:600;padding:10px 20px;border-radius:8px;cursor:pointer;white-space:nowrap}
+.token-confirm-btn:hover{background:#2563eb}
+.token-loaded{font-size:12px;color:#22c55e;font-weight:600;display:none}
 
 .rules-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem}
 .add-rule-btn{background:#3b82f6;color:#fff;border:none;font-size:12px;font-weight:600;padding:7px 14px;border-radius:8px;cursor:pointer}
@@ -69,7 +75,7 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#f0f4f8;color:#1a1a2
 .time-sep-label{font-size:12px;color:#94a3b8;font-weight:600}
 .no-rules{text-align:center;padding:2rem 1rem;color:#94a3b8;font-size:13px}
 
-.save-card{background:#fff;border-radius:14px;padding:1.25rem 1.5rem;box-shadow:0 1px 4px rgba(0,0,0,0.06);margin-top:1.5rem;display:flex;align-items:center;justify-content:space-between;gap:1rem}
+.save-card{background:#fff;border-radius:14px;padding:1.25rem 1.5rem;box-shadow:0 1px 4px rgba(0,0,0,0.06);margin-top:1.5rem;display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap}
 .save-btn{background:#22c55e;color:#fff;border:none;font-size:14px;font-weight:700;padding:12px 36px;border-radius:9px;cursor:pointer;white-space:nowrap}
 .save-btn:hover{background:#16a34a}
 .save-btn:disabled{background:#86efac;cursor:not-allowed}
@@ -113,6 +119,17 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#f0f4f8;color:#1a1a2
   </div>
 
   <div class="content">
+
+    <div class="card token-bar">
+      <div class="token-bar-label">GitHub Token</div>
+      <div class="token-wrap">
+        <input class="field-input" id="ghToken" type="password" placeholder="ghp_xxxxxxxxxxxx" style="padding-right:60px;width:100%" oninput="localStorage.setItem('ghToken',this.value)" />
+        <button class="token-eye" onclick="toggleToken()">ZEIGEN</button>
+      </div>
+      <button class="token-confirm-btn" onclick="confirmToken()">Bestätigen & Laden</button>
+      <div class="token-loaded" id="tokenLoaded">✓ Geladen</div>
+    </div>
+
     <div class="grid">
       <div>
         <div class="card">
@@ -128,17 +145,6 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#f0f4f8;color:#1a1a2
           <div class="field-group">
             <label class="field-label">E-Mail Adresse</label>
             <input class="field-input" id="emailInput" type="email" placeholder="deine@email.de" />
-          </div>
-        </div>
-
-        <div class="card" style="margin-top:1.5rem">
-          <div class="card-title">GitHub Zugang</div>
-          <div class="field-group">
-            <label class="field-label">Personal Access Token</label>
-            <div class="token-wrap">
-              <input class="field-input" id="ghToken" type="password" placeholder="ghp_xxxxxxxxxxxx" style="padding-right:60px" oninput="localStorage.setItem('ghToken',this.value)" />
-              <button class="token-eye" onclick="toggleToken()">ZEIGEN</button>
-            </div>
           </div>
         </div>
       </div>
@@ -164,6 +170,7 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#f0f4f8;color:#1a1a2
       </div>
       <button class="save-btn" id="saveBtn" onclick="saveConfig()">Einstellungen speichern</button>
     </div>
+
   </div>
 </div>
 
@@ -205,6 +212,13 @@ function toggleToken(){
   const btn=document.querySelector('.token-eye');
   if(inp.type==='password'){inp.type='text';btn.textContent='HIDDEN';}
   else{inp.type='password';btn.textContent='ZEIGEN';}
+}
+
+function confirmToken(){
+  const token=document.getElementById('ghToken').value;
+  if(!token) return;
+  localStorage.setItem('ghToken',token);
+  loadConfig();
 }
 
 function addRule(data){
@@ -273,7 +287,7 @@ async function loadConfig(){
     const r=await fetch(`https://api.github.com/repos/${REPO}/contents/${FILE}`,{
       headers:{Authorization:`token ${token}`,Accept:'application/vnd.github.v3+json'}
     });
-    if(!r.ok) return;
+    if(!r.ok){showStatus(false,'Laden fehlgeschlagen','Token prüfen');return;}
     const data=await r.json();
     const cfg=JSON.parse(atob(data.content));
     document.getElementById('plateCity').value=cfg.plate_city||'';
@@ -287,7 +301,10 @@ async function loadConfig(){
       addRule({days:['monday','tuesday','wednesday','thursday','friday'],mode:'random',time_from:'06:00',time_to:'06:30'});
       addRule({days:['saturday'],mode:'random',time_from:'09:00',time_to:'09:30'});
     }
-  } catch(e){showStatus(false,'Laden fehlgeschlagen','Token prüfen');}
+    const tl=document.getElementById('tokenLoaded');
+    tl.style.display='block';
+    setTimeout(()=>tl.style.display='none',3000);
+  } catch(e){showStatus(false,'Verbindungsfehler','Internetverbindung prüfen');}
 }
 
 async function saveConfig(){
@@ -302,7 +319,6 @@ async function saveConfig(){
     rules:getRules()
   };
   try{
-    // Immer frischen SHA holen
     const getR=await fetch(`https://api.github.com/repos/${REPO}/contents/${FILE}`,{
       headers:{Authorization:`token ${token}`,Accept:'application/vnd.github.v3+json'}
     });
