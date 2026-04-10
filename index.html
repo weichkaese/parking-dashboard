@@ -44,7 +44,7 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#f0f4f8;color:#1a1a2
 .plate-city{width:80px;text-transform:uppercase}
 .plate-sep{display:flex;align-items:center;color:#cbd5e1;font-weight:700;font-size:16px}
 .token-wrap{position:relative;flex:1;min-width:200px}
-.token-eye{position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;color:#94a3b8;cursor:pointer;font-size:11px;font-weight:600;letter-spacing:0.05em}
+.token-eye{position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;color:#94a3b8;cursor:pointer;font-size:11px;font-weight:600}
 
 .token-bar{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:1.5rem}
 .token-bar-label{font-size:13px;font-weight:700;color:#3b82f6;white-space:nowrap}
@@ -73,6 +73,7 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#f0f4f8;color:#1a1a2
 .time-input{background:#fff;border:1.5px solid #e2e8f0;color:#1a1a2e;font-size:13px;padding:7px 10px;border-radius:7px;outline:none;width:100px}
 .time-input:focus{border-color:#3b82f6}
 .time-sep-label{font-size:12px;color:#94a3b8;font-weight:600}
+.time-error{font-size:11px;color:#ef4444;margin-top:5px;display:none}
 .no-rules{text-align:center;padding:2rem 1rem;color:#94a3b8;font-size:13px}
 
 .save-card{background:#fff;border-radius:14px;padding:1.25rem 1.5rem;box-shadow:0 1px 4px rgba(0,0,0,0.06);margin-top:1.5rem;display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap}
@@ -137,14 +138,14 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#f0f4f8;color:#1a1a2
           <div class="field-group">
             <label class="field-label">Kennzeichen</label>
             <div class="plate-row">
-              <input class="field-input plate-city" id="plateCity" placeholder="UL" maxlength="3" />
+              <input class="field-input plate-city" id="plateCity" placeholder="Stadt" maxlength="3" />
               <div class="plate-sep">–</div>
-              <input class="field-input" id="plateNum" placeholder="KL787" maxlength="8" style="text-transform:uppercase;flex:1" />
+              <input class="field-input" id="plateNum" placeholder="AB1234" maxlength="8" style="text-transform:uppercase;flex:1" />
             </div>
           </div>
           <div class="field-group">
             <label class="field-label">E-Mail Adresse</label>
-            <input class="field-input" id="emailInput" type="email" placeholder="deine@email.de" />
+            <input class="field-input" id="emailInput" type="email" placeholder="beispiel@email.de" />
           </div>
         </div>
       </div>
@@ -226,7 +227,8 @@ function addRule(data){
   const id=ruleCount;
   const noRules=document.getElementById('noRules');
   if(noRules) noRules.remove();
-  const activeDays=data?data.days:['monday','tuesday','wednesday','thursday','friday'];
+  // Neue Regel: keine Tage vorausgewählt. Nur bei geladenen Daten Tage setzen.
+  const activeDays=data?data.days:[];
   const mode=data?data.mode:'random';
   const timeFrom=data?data.time_from:'06:00';
   const timeTo=data?data.time_to:'06:30';
@@ -244,12 +246,29 @@ function addRule(data){
       <div class="mode-btn${mode==='random'?' active':''}" onclick="setMode(${id},'random',this)">Zufällig zwischen</div>
     </div>
     <div class="time-inputs">
-      <input class="time-input" id="time-from-${id}" type="time" value="${timeFrom}" />
+      <input class="time-input" id="time-from-${id}" type="time" value="${timeFrom}" onchange="validateTime(${id})" />
       <div class="time-sep-label" id="time-sep-${id}" style="${mode==='fixed'?'display:none':''}">bis</div>
-      <input class="time-input" id="time-to-${id}" type="time" value="${timeTo}" style="${mode==='fixed'?'display:none':''}"/>
+      <input class="time-input" id="time-to-${id}" type="time" value="${timeTo}" style="${mode==='fixed'?'display:none':''}" onchange="validateTime(${id})" />
     </div>
+    <div class="time-error" id="time-err-${id}">⚠ Endzeit muss nach Startzeit liegen</div>
   `;
   document.getElementById('rulesContainer').appendChild(div);
+}
+
+function validateTime(id){
+  const from=document.getElementById('time-from-'+id).value;
+  const to=document.getElementById('time-to-'+id).value;
+  const toEl=document.getElementById('time-to-'+id);
+  const errEl=document.getElementById('time-err-'+id);
+  if(toEl.style.display==='none') return true;
+  if(from&&to&&to<=from){
+    errEl.style.display='block';
+    document.getElementById('time-to-'+id).style.borderColor='#ef4444';
+    return false;
+  }
+  errEl.style.display='none';
+  document.getElementById('time-to-'+id).style.borderColor='#e2e8f0';
+  return true;
 }
 
 function setMode(id,mode,el){
@@ -257,8 +276,16 @@ function setMode(id,mode,el){
   el.classList.add('active');
   const sep=document.getElementById('time-sep-'+id);
   const timeTo=document.getElementById('time-to-'+id);
-  if(mode==='fixed'){sep.style.display='none';timeTo.style.display='none';}
-  else{sep.style.display='';timeTo.style.display='';}
+  const errEl=document.getElementById('time-err-'+id);
+  if(mode==='fixed'){
+    sep.style.display='none';
+    timeTo.style.display='none';
+    errEl.style.display='none';
+  } else {
+    sep.style.display='';
+    timeTo.style.display='';
+    validateTime(id);
+  }
 }
 
 function removeRule(id){
@@ -272,12 +299,15 @@ function removeRule(id){
 }
 
 function getRules(){
-  return [...document.querySelectorAll('.rule-block')].map(block=>{
+  let valid=true;
+  const rules=[...document.querySelectorAll('.rule-block')].map(block=>{
     const id=block.id.split('-')[1];
     const days=[...block.querySelectorAll('.day-chip.active')].map(c=>c.dataset.day);
     const mode=block.querySelector('.mode-btn.active').textContent==='Feste Uhrzeit'?'fixed':'random';
+    if(!validateTime(id)) valid=false;
     return{days,mode,time_from:document.getElementById('time-from-'+id).value,time_to:document.getElementById('time-to-'+id).value};
   });
+  return valid?rules:null;
 }
 
 async function loadConfig(){
@@ -310,13 +340,15 @@ async function loadConfig(){
 async function saveConfig(){
   const token=document.getElementById('ghToken').value;
   if(!token){showStatus(false,'Token fehlt','GitHub Token eingeben');return;}
+  const rules=getRules();
+  if(!rules){showStatus(false,'Zeitfehler','Bitte Uhrzeiten korrigieren');return;}
   const btn=document.getElementById('saveBtn');
   btn.disabled=true;btn.textContent='Speichern...';
   const cfg={
     plate_city:document.getElementById('plateCity').value.toUpperCase(),
     plate_number:document.getElementById('plateNum').value.toUpperCase(),
     email:document.getElementById('emailInput').value,
-    rules:getRules()
+    rules
   };
   try{
     const getR=await fetch(`https://api.github.com/repos/${REPO}/contents/${FILE}`,{
