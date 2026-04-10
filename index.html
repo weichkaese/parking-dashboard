@@ -15,7 +15,7 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#f0f4f8;color:#1a1a2
 .lock-sub{font-size:13px;color:#64748b;margin-bottom:2rem}
 .pw-field{width:100%;background:#f8fafc;border:1.5px solid #e2e8f0;color:#1a1a2e;font-size:14px;padding:11px 14px;border-radius:8px;outline:none;margin-bottom:12px}
 .pw-field:focus{border-color:#3b82f6}
-.pw-btn{width:100%;background:#3b82f6;color:#fff;border:none;font-size:14px;font-weight:600;padding:12px;border-radius:8px;cursor:pointer;letter-spacing:0.03em}
+.pw-btn{width:100%;background:#3b82f6;color:#fff;border:none;font-size:14px;font-weight:600;padding:12px;border-radius:8px;cursor:pointer}
 .pw-btn:hover{background:#2563eb}
 .pw-error{font-size:12px;color:#ef4444;margin-top:8px;display:none}
 
@@ -34,8 +34,7 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#f0f4f8;color:#1a1a2
 @media(max-width:700px){.grid{grid-template-columns:1fr}}
 
 .card{background:#fff;border-radius:14px;padding:1.5rem;box-shadow:0 1px 4px rgba(0,0,0,0.06)}
-.card-title{font-size:13px;font-weight:700;color:#3b82f6;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:1.2rem;display:flex;align-items:center;gap:8px}
-.card-title svg{width:14px;height:14px}
+.card-title{font-size:13px;font-weight:700;color:#3b82f6;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:1.2rem}
 
 .field-group{margin-bottom:1rem}
 .field-label{font-size:12px;font-weight:600;color:#475569;margin-bottom:5px;display:block}
@@ -44,17 +43,16 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#f0f4f8;color:#1a1a2
 .plate-row{display:flex;gap:8px}
 .plate-city{width:80px;text-transform:uppercase}
 .plate-sep{display:flex;align-items:center;color:#cbd5e1;font-weight:700;font-size:16px}
-
 .token-wrap{position:relative}
 .token-eye{position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;color:#94a3b8;cursor:pointer;font-size:11px;font-weight:600;letter-spacing:0.05em}
 
 .rules-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem}
-.add-rule-btn{background:#3b82f6;color:#fff;border:none;font-size:12px;font-weight:600;padding:7px 14px;border-radius:8px;cursor:pointer;display:flex;align-items:center;gap:5px}
+.add-rule-btn{background:#3b82f6;color:#fff;border:none;font-size:12px;font-weight:600;padding:7px 14px;border-radius:8px;cursor:pointer}
 .add-rule-btn:hover{background:#2563eb}
 
 .rule-block{background:#f8fafc;border:1.5px solid #e2e8f0;border-radius:10px;padding:1rem;margin-bottom:0.75rem;position:relative}
 .rule-block-title{font-size:11px;font-weight:700;color:#3b82f6;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:0.75rem}
-.rule-remove{position:absolute;top:10px;right:10px;background:none;border:none;color:#cbd5e1;cursor:pointer;font-size:16px;line-height:1}
+.rule-remove{position:absolute;top:10px;right:10px;background:none;border:none;color:#cbd5e1;cursor:pointer;font-size:18px;line-height:1}
 .rule-remove:hover{color:#ef4444}
 
 .days-grid{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:0.75rem}
@@ -68,16 +66,23 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#f0f4f8;color:#1a1a2
 .time-inputs{display:flex;align-items:center;gap:8px}
 .time-input{background:#fff;border:1.5px solid #e2e8f0;color:#1a1a2e;font-size:13px;padding:7px 10px;border-radius:7px;outline:none;width:100px}
 .time-input:focus{border-color:#3b82f6}
-.time-sep{font-size:12px;color:#94a3b8;font-weight:600}
-
+.time-sep-label{font-size:12px;color:#94a3b8;font-weight:600}
 .no-rules{text-align:center;padding:2rem 1rem;color:#94a3b8;font-size:13px}
 
-.bottom-bar{background:#fff;border-top:1px solid #e2e8f0;padding:1rem 2rem;display:flex;align-items:center;justify-content:space-between;position:sticky;bottom:0}
-.save-btn{background:#22c55e;color:#fff;border:none;font-size:14px;font-weight:700;padding:11px 32px;border-radius:9px;cursor:pointer;letter-spacing:0.03em}
+.save-card{background:#fff;border-radius:14px;padding:1.25rem 1.5rem;box-shadow:0 1px 4px rgba(0,0,0,0.06);margin-top:1.5rem;display:flex;align-items:center;justify-content:space-between;gap:1rem}
+.save-btn{background:#22c55e;color:#fff;border:none;font-size:14px;font-weight:700;padding:12px 36px;border-radius:9px;cursor:pointer;white-space:nowrap}
 .save-btn:hover{background:#16a34a}
-.status-msg{font-size:13px;font-weight:500;min-height:20px}
-.status-ok{color:#22c55e}
-.status-err{color:#ef4444}
+.save-btn:disabled{background:#86efac;cursor:not-allowed}
+
+.status-area{display:flex;align-items:center;gap:10px;flex:1}
+.status-icon{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;display:none}
+.status-icon.show{display:flex}
+.status-icon.ok{background:#dcfce7}
+.status-icon.err{background:#fee2e2}
+.status-text{font-size:14px;font-weight:600}
+.status-text.ok{color:#16a34a}
+.status-text.err{color:#dc2626}
+.status-hint{font-size:12px;color:#94a3b8;margin-top:2px}
 </style>
 </head>
 <body>
@@ -109,11 +114,9 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#f0f4f8;color:#1a1a2
 
   <div class="content">
     <div class="grid">
-
       <div>
         <div class="card">
           <div class="card-title">Fahrzeug & Konto</div>
-
           <div class="field-group">
             <label class="field-label">Kennzeichen</label>
             <div class="plate-row">
@@ -122,7 +125,6 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#f0f4f8;color:#1a1a2
               <input class="field-input" id="plateNum" placeholder="KL787" maxlength="8" style="text-transform:uppercase;flex:1" />
             </div>
           </div>
-
           <div class="field-group">
             <label class="field-label">E-Mail Adresse</label>
             <input class="field-input" id="emailInput" type="email" placeholder="deine@email.de" />
@@ -134,7 +136,7 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#f0f4f8;color:#1a1a2
           <div class="field-group">
             <label class="field-label">Personal Access Token</label>
             <div class="token-wrap">
-              <input class="field-input" id="ghToken" type="password" placeholder="ghp_xxxxxxxxxxxx" style="padding-right:60px" />
+              <input class="field-input" id="ghToken" type="password" placeholder="ghp_xxxxxxxxxxxx" style="padding-right:60px" oninput="localStorage.setItem('ghToken',this.value)" />
               <button class="token-eye" onclick="toggleToken()">ZEIGEN</button>
             </div>
           </div>
@@ -150,13 +152,18 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#f0f4f8;color:#1a1a2
           <div class="no-rules" id="noRules">Keine Regeln. Klicke auf "+ Neue Regel".</div>
         </div>
       </div>
-
     </div>
-  </div>
 
-  <div class="bottom-bar">
-    <div class="status-msg" id="statusMsg"></div>
-    <button class="save-btn" onclick="saveConfig()">Einstellungen speichern</button>
+    <div class="save-card">
+      <div class="status-area">
+        <div class="status-icon" id="statusIcon"></div>
+        <div>
+          <div class="status-text" id="statusText"></div>
+          <div class="status-hint" id="statusHint"></div>
+        </div>
+      </div>
+      <button class="save-btn" id="saveBtn" onclick="saveConfig()">Einstellungen speichern</button>
+    </div>
   </div>
 </div>
 
@@ -177,7 +184,11 @@ async function checkPw(){
   if(h===PW_HASH){
     document.getElementById('lockScreen').style.display='none';
     document.getElementById('app').style.display='flex';
-    loadConfig();
+    const saved=localStorage.getItem('ghToken');
+    if(saved){
+      document.getElementById('ghToken').value=saved;
+      loadConfig();
+    }
   } else {
     document.getElementById('pwError').style.display='block';
   }
@@ -201,12 +212,10 @@ function addRule(data){
   const id=ruleCount;
   const noRules=document.getElementById('noRules');
   if(noRules) noRules.remove();
-
   const activeDays=data?data.days:['monday','tuesday','wednesday','thursday','friday'];
-  const mode=data?data.mode:'fixed';
+  const mode=data?data.mode:'random';
   const timeFrom=data?data.time_from:'06:00';
   const timeTo=data?data.time_to:'06:30';
-
   const div=document.createElement('div');
   div.className='rule-block';
   div.id='rule-'+id;
@@ -220,9 +229,9 @@ function addRule(data){
       <div class="mode-btn${mode==='fixed'?' active':''}" onclick="setMode(${id},'fixed',this)">Feste Uhrzeit</div>
       <div class="mode-btn${mode==='random'?' active':''}" onclick="setMode(${id},'random',this)">Zufällig zwischen</div>
     </div>
-    <div class="time-inputs" id="time-inputs-${id}">
+    <div class="time-inputs">
       <input class="time-input" id="time-from-${id}" type="time" value="${timeFrom}" />
-      <div class="time-sep" id="time-sep-${id}" style="${mode==='fixed'?'display:none':''}">bis</div>
+      <div class="time-sep-label" id="time-sep-${id}" style="${mode==='fixed'?'display:none':''}">bis</div>
       <input class="time-input" id="time-to-${id}" type="time" value="${timeTo}" style="${mode==='fixed'?'display:none':''}"/>
     </div>
   `;
@@ -242,8 +251,7 @@ function removeRule(id){
   document.getElementById('rule-'+id).remove();
   if(document.querySelectorAll('.rule-block').length===0){
     const div=document.createElement('div');
-    div.className='no-rules';
-    div.id='noRules';
+    div.className='no-rules';div.id='noRules';
     div.textContent='Keine Regeln. Klicke auf "+ Neue Regel".';
     document.getElementById('rulesContainer').appendChild(div);
   }
@@ -254,12 +262,7 @@ function getRules(){
     const id=block.id.split('-')[1];
     const days=[...block.querySelectorAll('.day-chip.active')].map(c=>c.dataset.day);
     const mode=block.querySelector('.mode-btn.active').textContent==='Feste Uhrzeit'?'fixed':'random';
-    return{
-      days,
-      mode,
-      time_from:document.getElementById('time-from-'+id).value,
-      time_to:document.getElementById('time-to-'+id).value
-    };
+    return{days,mode,time_from:document.getElementById('time-from-'+id).value,time_to:document.getElementById('time-to-'+id).value};
   });
 }
 
@@ -284,12 +287,14 @@ async function loadConfig(){
       addRule({days:['monday','tuesday','wednesday','thursday','friday'],mode:'random',time_from:'06:00',time_to:'06:30'});
       addRule({days:['saturday'],mode:'random',time_from:'09:00',time_to:'09:30'});
     }
-  } catch(e){}
+  } catch(e){showStatus(false,'Laden fehlgeschlagen','Token prüfen');}
 }
 
 async function saveConfig(){
   const token=document.getElementById('ghToken').value;
-  if(!token){showStatus('GitHub Token fehlt',false);return;}
+  if(!token){showStatus(false,'Token fehlt','GitHub Token eingeben');return;}
+  const btn=document.getElementById('saveBtn');
+  btn.disabled=true;btn.textContent='Speichern...';
   const cfg={
     plate_city:document.getElementById('plateCity').value.toUpperCase(),
     plate_number:document.getElementById('plateNum').value.toUpperCase(),
@@ -297,25 +302,33 @@ async function saveConfig(){
     rules:getRules()
   };
   try{
+    // Immer frischen SHA holen
     const getR=await fetch(`https://api.github.com/repos/${REPO}/contents/${FILE}`,{
       headers:{Authorization:`token ${token}`,Accept:'application/vnd.github.v3+json'}
     });
+    if(!getR.ok){showStatus(false,'Fehler beim Lesen','Token oder Repo prüfen');btn.disabled=false;btn.textContent='Einstellungen speichern';return;}
     const getData=await getR.json();
     const putR=await fetch(`https://api.github.com/repos/${REPO}/contents/${FILE}`,{
       method:'PUT',
       headers:{Authorization:`token ${token}`,Accept:'application/vnd.github.v3+json','Content-Type':'application/json'},
       body:JSON.stringify({message:'Config update via dashboard',content:btoa(JSON.stringify(cfg,null,2)),sha:getData.sha})
     });
-    if(putR.ok) showStatus('Gespeichert ✓',true);
-    else showStatus('Fehler beim Speichern',false);
-  } catch(e){showStatus('Verbindungsfehler',false);}
+    if(putR.ok){showStatus(true,'Erfolgreich gespeichert','Änderungen werden beim nächsten Run übernommen');}
+    else{showStatus(false,'Fehler beim Speichern','Bitte nochmal versuchen');}
+  } catch(e){showStatus(false,'Verbindungsfehler','Internetverbindung prüfen');}
+  btn.disabled=false;btn.textContent='Einstellungen speichern';
 }
 
-function showStatus(msg,ok){
-  const el=document.getElementById('statusMsg');
-  el.textContent=msg;
-  el.className='status-msg '+(ok?'status-ok':'status-err');
-  setTimeout(()=>el.textContent='',4000);
+function showStatus(ok,text,hint){
+  const icon=document.getElementById('statusIcon');
+  const textEl=document.getElementById('statusText');
+  const hintEl=document.getElementById('statusHint');
+  icon.textContent=ok?'✓':'✕';
+  icon.className='status-icon show '+(ok?'ok':'err');
+  textEl.textContent=text;
+  textEl.className='status-text '+(ok?'ok':'err');
+  hintEl.textContent=hint||'';
+  if(ok) setTimeout(()=>{icon.className='status-icon';textEl.textContent='';hintEl.textContent='';},5000);
 }
 </script>
 </body>
