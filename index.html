@@ -361,8 +361,24 @@ async function saveConfig(){
       headers:{Authorization:`token ${token}`,Accept:'application/vnd.github.v3+json','Content-Type':'application/json'},
       body:JSON.stringify({message:'Config update via dashboard',content:btoa(JSON.stringify(cfg,null,2)),sha:getData.sha})
     });
-    if(putR.ok){showStatus(true,'Erfolgreich gespeichert','Änderungen werden beim nächsten Run übernommen');}
-    else{showStatus(false,'Fehler beim Speichern','Bitte nochmal versuchen');}
+    if(putR.ok){
+      try {
+        const dispatchR = await fetch(`https://api.github.com/repos/${REPO}/actions/workflows/parking.yml/dispatches`, {
+          method: 'POST',
+          headers: {Authorization:`token ${token}`, Accept:'application/vnd.github.v3+json', 'Content-Type':'application/json'},
+          body: JSON.stringify({ref: 'main'})
+        });
+        if(dispatchR.ok || dispatchR.status === 204){
+          showStatus(true,'Gespeichert & Workflow gestartet','Parkzeit wird jetzt automatisch verlängert');
+        } else {
+          showStatus(true,'Gespeichert, aber Workflow nicht gestartet','Manuell in GitHub Actions starten');
+        }
+      } catch(e){
+        showStatus(true,'Gespeichert, aber Workflow nicht gestartet','Manuell in GitHub Actions starten');
+      }
+    } else {
+      showStatus(false,'Fehler beim Speichern','Bitte nochmal versuchen');
+    }
   } catch(e){showStatus(false,'Verbindungsfehler','Internetverbindung prüfen');}
   btn.disabled=false;btn.textContent='Einstellungen speichern';
 }
