@@ -124,7 +124,7 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#f0f4f8;color:#1a1a2
     <div class="card token-bar">
       <div class="token-bar-label">GitHub Token</div>
       <div class="token-wrap">
-        <input class="field-input" id="ghToken" type="password" placeholder="ghp_xxxxxxxxxxxx" style="padding-right:60px;width:100%" oninput="localStorage.setItem('ghToken',this.value)" />
+        <input class="field-input" id="ghToken" type="password" placeholder="ghp_xxxxxxxxxxxx" style="padding-right:60px;width:100%" />
         <button class="token-eye" onclick="toggleToken()">ZEIGEN</button>
       </div>
       <button class="token-confirm-btn" onclick="confirmToken()">Bestätigen & Laden</button>
@@ -181,6 +181,8 @@ const REPO='weichkaese/parking-auto-extend';
 const FILE='config.json';
 const DAYS=[{k:'monday',l:'MO'},{k:'tuesday',l:'DI'},{k:'wednesday',l:'MI'},{k:'thursday',l:'DO'},{k:'friday',l:'FR'},{k:'saturday',l:'SA'},{k:'sunday',l:'SO'}];
 let ruleCount=0;
+let failCount=0;
+let lockUntil=0;
 
 async function sha256(msg){
   const buf=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(msg));
@@ -188,16 +190,32 @@ async function sha256(msg){
 }
 
 async function checkPw(){
+  const now=Date.now();
+  if(now<lockUntil){
+    const secs=Math.ceil((lockUntil-now)/1000);
+    document.getElementById('pwError').textContent=`Gesperrt – ${secs}s warten`;
+    document.getElementById('pwError').style.display='block';
+    return;
+  }
   const h=await sha256(document.getElementById('pwInput').value);
   if(h===PW_HASH){
+    failCount=0;
+    document.getElementById('pwError').style.display='none';
     document.getElementById('lockScreen').style.display='none';
     document.getElementById('app').style.display='flex';
-    const saved=localStorage.getItem('ghToken');
+    const saved=sessionStorage.getItem('ghToken');
     if(saved){
       document.getElementById('ghToken').value=saved;
       loadConfig();
     }
   } else {
+    failCount++;
+    if(failCount>=3){
+      lockUntil=Date.now()+failCount*5000;
+      document.getElementById('pwError').textContent=`Falsches Passwort – ${failCount*5}s gesperrt`;
+    } else {
+      document.getElementById('pwError').textContent='Falsches Passwort';
+    }
     document.getElementById('pwError').style.display='block';
   }
 }
@@ -218,7 +236,7 @@ function toggleToken(){
 function confirmToken(){
   const token=document.getElementById('ghToken').value;
   if(!token) return;
-  localStorage.setItem('ghToken',token);
+  sessionStorage.setItem('ghToken',token);
   loadConfig();
 }
 
@@ -227,7 +245,6 @@ function addRule(data){
   const id=ruleCount;
   const noRules=document.getElementById('noRules');
   if(noRules) noRules.remove();
-  // Neue Regel: keine Tage vorausgewählt. Nur bei geladenen Daten Tage setzen.
   const activeDays=data?data.days:[];
   const mode=data?data.mode:'random';
   const timeFrom=data?data.time_from:'06:00';
@@ -309,7 +326,7 @@ function getRules(){
   });
   return valid?rules:null;
 }
- 
+
 async function loadConfig(){
   const token=document.getElementById('ghToken').value;
   if(!token) return;
